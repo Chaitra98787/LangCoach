@@ -1,120 +1,128 @@
 import React, { useState } from "react";
-import axios from "axios";
-import QuizGame from "../components/QuizGame";
 
-function Plan() {
-  const [formData, setFormData] = useState({
-    language: "",
-    level: "",
-    goal: "",
-  });
+const Plan = () => {
+  const [language, setLanguage] = useState("");
+  const [level, setLevel] = useState("");
+  const [goal, setGoal] = useState("");
+  const [plan, setPlan] = useState([]);
 
-  const [response, setResponse] = useState(null);
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async () => {
-    try {
-      const res = await axios.post("http://localhost:5000/generate_plan", formData);
-      setResponse(res.data);
-    } catch (error) {
-      console.error("Error:", error);
+  const generatePlan = () => {
+    if (!language || !level || !goal) {
+      setPlan(["❌ Please select all options to generate your plan."]);
+      return;
     }
+
+    const dailyPlan = [
+      `📘 Day 1: Basic ${language} vocabulary & greetings`,
+      `📝 Day 2: ${level === "Beginner" ? "Grammar basics" : "Complex sentence structures"}`,
+      `🎧 Day 3: Listening to ${goal} practice materials`,
+      `🗣️ Day 4: Speaking exercises based on ${goal} scenarios`,
+      `📖 Day 5: Reading comprehension from ${language} blogs/articles`,
+      `🧠 Day 6: Quiz yourself with practice tests`,
+      `🛌 Day 7: Review + rest & reflect`
+    ];
+
+    setPlan(dailyPlan);
   };
 
   return (
-    <div style={{ fontFamily: "Arial", backgroundColor: "#f0f4f8", minHeight: "100vh", marginLeft: "240px", padding: "40px" }}>
-      <h2 style={{ color: "#1a73e8", fontSize: "2rem" }}>🎯 Create Your Personalized Language Plan</h2>
+    <div style={styles.container}>
+      <h2 style={styles.heading}>🎯 Create Your Personalized Language Plan</h2>
 
-      <div style={{
-        backgroundColor: "#fff",
-        padding: "24px",
-        marginTop: "20px",
-        borderRadius: "12px",
-        boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
-        maxWidth: "600px"
-      }}>
-        <label>Language:</label><br />
-        <select name="language" onChange={handleChange} style={{ width: "100%", marginBottom: "16px", padding: "8px" }}>
+      <div style={styles.form}>
+        <label style={styles.label}>Language:</label>
+        <select value={language} onChange={(e) => setLanguage(e.target.value)} style={styles.select}>
           <option value="">Select</option>
           <option value="English">English</option>
-          <option value="Spanish">Spanish</option>
+          <option value="French">French</option>
+          <option value="German">German</option>
         </select>
 
-        <label>Level:</label><br />
-        <select name="level" onChange={handleChange} style={{ width: "100%", marginBottom: "16px", padding: "8px" }}>
+        <label style={styles.label}>Level:</label>
+        <select value={level} onChange={(e) => setLevel(e.target.value)} style={styles.select}>
           <option value="">Select</option>
           <option value="Beginner">Beginner</option>
           <option value="Intermediate">Intermediate</option>
           <option value="Advanced">Advanced</option>
         </select>
 
-        <label>Goal:</label><br />
-        <select name="goal" onChange={handleChange} style={{ width: "100%", marginBottom: "16px", padding: "8px" }}>
+        <label style={styles.label}>Goal:</label>
+        <select value={goal} onChange={(e) => setGoal(e.target.value)} style={styles.select}>
           <option value="">Select</option>
-          <option value="Vocabulary">Vocabulary</option>
-          <option value="TOEFL">TOEFL</option>
           <option value="IELTS">IELTS</option>
-          <option value="Speaking">Speaking</option>
+          <option value="TOEFL">TOEFL</option>
+          <option value="General fluency">General fluency</option>
         </select>
 
-        <button
-          onClick={handleSubmit}
-          style={{
-            backgroundColor: "#1a73e8",
-            color: "#fff",
-            padding: "12px 20px",
-            border: "none",
-            borderRadius: "8px",
-            fontSize: "16px",
-            cursor: "pointer"
-          }}
-        >
-          Generate Plan
-        </button>
+        <button onClick={generatePlan} style={styles.button}>Generate Plan</button>
       </div>
 
-      {response && (
-        <div style={{ marginTop: "40px", backgroundColor: "#fff", padding: "24px", borderRadius: "12px", boxShadow: "0 4px 10px rgba(0,0,0,0.1)", maxWidth: "700px" }}>
-          <h3>📘 Flashcards</h3>
+      {plan.length > 0 && (
+        <div style={styles.planBox}>
+          <h3>Your 7-Day Plan:</h3>
           <ul>
-            {response.flashcards.map((fc, idx) => (
-              <li key={idx}><b>{fc.word}</b>: {fc.meaning}</li>
+            {plan.map((item, index) => (
+              <li key={index} style={styles.planItem}>{item}</li>
             ))}
           </ul>
-
-          <h3>🧠 Quiz</h3>
-          {response.quiz.map((q, idx) => (
-            <div key={idx}>
-              <p><b>{q.question}</b></p>
-              <ul>
-                {q.options.map((opt, i) => (
-                  <li key={i}>{opt}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
-
-          <h3>🔗 Resources</h3>
-          <ul>
-            {response.resources.map((link, idx) => (
-              <li key={idx}><a href={link} target="_blank" rel="noreferrer">{link}</a></li>
-            ))}
-          </ul>
-
-          <h3>💡 Tip</h3>
-          <p>{response.tips}</p>
         </div>
       )}
-
-      <div style={{ marginTop: "60px" }}>
-        <h2 style={{ color: "#1a73e8", fontSize: "1.8rem" }}>🧩 Practice Quiz</h2>
-        <QuizGame />
-      </div>
     </div>
   );
-}
+};
+
+const styles = {
+  container: {
+    maxWidth: "700px",
+    margin: "auto",
+    backgroundColor: "#fffaf2",
+    padding: "30px",
+    borderRadius: "12px",
+    fontFamily: "Arial",
+    boxShadow: "0 4px 8px rgba(0,0,0,0.05)"
+  },
+  heading: {
+    fontSize: "24px",
+    color: "#1a73e8",
+    fontWeight: "bold",
+    marginBottom: "20px"
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "15px",
+    marginBottom: "30px"
+  },
+  label: {
+    fontWeight: "bold",
+    marginBottom: "-8px"
+  },
+  select: {
+    padding: "10px",
+    fontSize: "16px",
+    borderRadius: "6px",
+    border: "1px solid #ccc"
+  },
+  button: {
+    marginTop: "10px",
+    padding: "12px 20px",
+    fontSize: "16px",
+    backgroundColor: "#4caf50",
+    color: "white",
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer"
+  },
+  planBox: {
+    marginTop: "20px",
+    backgroundColor: "#e8f0fe",
+    padding: "20px",
+    borderRadius: "8px"
+  },
+  planItem: {
+    marginBottom: "10px",
+    fontSize: "16px"
+  }
+};
 
 export default Plan;
