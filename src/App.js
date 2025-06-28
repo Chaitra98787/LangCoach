@@ -8,14 +8,12 @@ import QuizPage from "./pages/QuizPage";
 function App() {
   return (
     <Router>
-      <div style={{ display: "flex", width: "100%" }}>
+      <div style={{ display: "flex", minHeight: "100vh", width: "100%" }}>
+        {/* Sidebar always visible */}
         <Sidebar />
-        <div style={{
-          flex: 1,
-          padding: "40px",
-          backgroundColor: "#fff6ec", // consistent background
-          minHeight: "100vh"
-        }}>
+
+        {/* Right-hand content area */}
+        <div style={{ flex: 1, backgroundColor: "#f5f8ff", padding: "30px" }}>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/plan" element={<Plan />} />
